@@ -25,16 +25,30 @@ function onClickedEstimatePrice() {
   var bathrooms = getBathValue();
   var location = document.getElementById("uiLocations");
   var estPrice = document.getElementById("uiEstimatedPrice");
+  var loader = document.getElementById("uiLoader");
+  var submitBtn = document.querySelector(".submit");
+
+  // --- Show Loading State ---
+  estPrice.innerHTML = ""; // Clear previous result
+  loader.style.display = "block"; // Show loader
+  submitBtn.disabled = true; // Disable button
+  submitBtn.innerHTML = "Estimating...";
 
   var url = "http://127.0.0.1:5000/predict_home_price"; 
+
   $.post(url, {
       total_sqft: parseFloat(sqft.value),
       bhk: bhk,
       bath: bathrooms,
       location: location.value
   },function(data, status) {
-      console.log(data.estimated_price);
-      estPrice.innerHTML = "<h2>" + data.estimated_price.toString() + " Lakh</h2>";
+      // --- Hide Loading State ---
+      loader.style.display = "none"; // Hide loader
+      submitBtn.disabled = false; // Re-enable button
+      submitBtn.innerHTML = "Estimate Price";
+
+      // --- Display Result ---
+      estPrice.innerHTML = "<h2>₹ " + data.estimated_price.toString() + " Lakh</h2>";
       console.log(status);
   });
 }
@@ -48,6 +62,9 @@ function onPageLoad() {
           var locations = data.locations;
           var uiLocations = document.getElementById("uiLocations");
           $('#uiLocations').empty();
+          // Add a default placeholder option first
+          $('#uiLocations').append(new Option("Choose a Location", "", true, true));
+          
           for(var i in locations) {
               var opt = new Option(locations[i]);
               $('#uiLocations').append(opt);
