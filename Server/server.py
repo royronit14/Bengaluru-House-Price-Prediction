@@ -3,7 +3,7 @@ import util
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET'])
+@app.route('/get_location_names', methods=['GET'])
 def get_location_names():
     response = jsonify({
         'locations': util.get_location_names()
